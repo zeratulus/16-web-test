@@ -33,11 +33,18 @@ $_['text_year']                = 'year';
 
 // Entry
 $_['entry_qty']                = 'Qty';
+$_['entry_email']              = 'Email';
+$_['entry_limitations']        = 'Limitations';
+$_['entry_benefits']           = 'Benefits';
 $_['entry_name']               = 'Your Name';
 $_['entry_review']             = 'Your Review';
 $_['entry_rating']             = 'Rating';
+$_['entry_great']              = 'Great';
 $_['entry_good']               = 'Good';
+$_['entry_normal']             = 'Normal';
+$_['entry_so_so']              = 'So so';
 $_['entry_bad']                = 'Bad';
+
 
 // Tabs
 $_['tab_description']          = 'Description';
@@ -48,4 +55,5 @@ $_['tab_review']               = 'Reviews (%s)';
 $_['error_name']               = 'Warning: Review Name must be between 3 and 25 characters!';
 $_['error_text']               = 'Warning: Review Text must be between 25 and 1000 characters!';
 $_['error_rating']             = 'Warning: Please select a review rating!';
-$_['error_product']            = "Wanring: Product required to add the review!";
+$_['error_product']            = "Warning: Product required to add the review!";
+$_['error_error_email']        = "Warning: Email is required to add the review!";

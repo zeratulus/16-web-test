@@ -27,11 +27,22 @@
           <div class="form-group required">
             <label class="col-sm-2 control-label" for="input-author">{{ entry_author }}</label>
             <div class="col-sm-10">
-              <input type="text" name="author" value="{{ author }}" placeholder="{{ entry_author }}" id="input-author" class="form-control" />
+              <input type="text" name="author" value="{{ author }}" placeholder="{{ entry_author }}" id="input-author" class="form-control" required/>
               {% if error_author %}
               <div class="text-danger">{{ error_author }}</div>
               {% endif %} </div>
           </div>
+
+          <div class="form-group required">
+            <label class="col-sm-2 control-label" for="input-author">{{ entry_email }}</label>
+            <div class="col-sm-10">
+              <input type="email" name="email" value="{{ email }}" placeholder="{{ entry_email }}" id="input-author" class="form-control" required/>
+              {% if error_email %}
+                <div class="text-danger">{{ error_email }}</div>
+              {% endif %}
+            </div>
+          </div>
+
           <div class="form-group required">
             <label class="col-sm-2 control-label" for="input-product"><span data-toggle="tooltip" title="{{ help_product }}">{{ entry_product }}</span></label>
             <div class="col-sm-10">
@@ -41,6 +52,21 @@
               <div class="text-danger">{{ error_product }}</div>
               {% endif %} </div>
           </div>
+
+          <div class="form-group required">
+            <label class="col-sm-2 control-label" for="input-benefits">{{ entry_benefits }}</label>
+            <div class="col-sm-10">
+              <textarea name="benefits" cols="60" rows="5" placeholder="{{ entry_benefits }}" id="input-benefits" class="form-control">{{ benefits }}</textarea>
+            </div>
+          </div>
+
+          <div class="form-group required">
+            <label class="col-sm-2 control-label" for="input-limitations">{{ entry_limitations }}</label>
+            <div class="col-sm-10">
+              <textarea name="limitations" cols="60" rows="5" placeholder="{{ entry_limitations }}" id="input-limitations" class="form-control">{{ limitations }}</textarea>
+            </div>
+          </div>
+
           <div class="form-group required">
             <label class="col-sm-2 control-label" for="input-text">{{ entry_text }}</label>
             <div class="col-sm-10">
@@ -49,6 +75,7 @@
               <div class="text-danger">{{ error_text }}</div>
               {% endif %} </div>
           </div>
+
           <div class="form-group required">
             <label class="col-sm-2 control-label" for="input-name">{{ entry_rating }}</label>
             <div class="col-sm-10">
@@ -91,6 +118,7 @@
               <div class="text-danger">{{ error_rating }}</div>
               {% endif %} </div>
           </div>
+
           <div class="form-group">
             <label class="col-sm-2 control-label" for="input-date-added">{{ entry_date_added }}</label>
             <div class="col-sm-3">
@@ -101,6 +129,21 @@
                 </span> </div>
             </div>
           </div>
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-ip">{{ entry_ip }}</label>
+            <div class="col-sm-10">
+              <input type="text" name="ip" value="{{ ip }}" placeholder="{{ entry_ip }}" id="input-ip" class="form-control" required/>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-user-agent">{{ entry_user_agent }}</label>
+            <div class="col-sm-10">
+              <textarea name="user_agent" cols="60" rows="5" placeholder="{{ entry_user_agent }}" id="input-user-agent" class="form-control">{{ user_agent }}</textarea>
+            </div>
+          </div>
+
           <div class="form-group">
             <label class="col-sm-2 control-label" for="input-status">{{ entry_status }}</label>
             <div class="col-sm-10">

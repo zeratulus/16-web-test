@@ -24,6 +24,11 @@ $_['entry_rating']      = 'Rating';
 $_['entry_status']      = 'Status';
 $_['entry_text']        = 'Text';
 $_['entry_date_added']  = 'Date Added';
+$_['entry_email']       = 'Email';
+$_['entry_limitations'] = 'Limitations';
+$_['entry_benefits']    = 'Benefits';
+$_['entry_ip']          = 'IP';
+$_['entry_user_agent']  = 'User Agent';
 
 // Help
 $_['help_product']      = '(Autocomplete)';
@@ -33,4 +38,5 @@ $_['error_permission']  = 'Warning: You do not have permission to modify reviews
 $_['error_product']     = 'Product required!';
 $_['error_author']      = 'Author must be between 3 and 64 characters!';
 $_['error_text']        = 'Review Text must be at least 1 character!';
-$_['error_rating']      = 'Review rating required!';
+$_['error_rating']      = 'Review rating is required!';
+$_['error_email']       = 'Review email is required!';

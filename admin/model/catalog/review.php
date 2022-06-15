@@ -1,7 +1,19 @@
 <?php
 class ModelCatalogReview extends Model {
 	public function addReview($data) {
-		$this->db->query("INSERT INTO " . DB_PREFIX . "review SET author = '" . $this->db->escape($data['author']) . "', product_id = '" . (int)$data['product_id'] . "', text = '" . $this->db->escape(strip_tags($data['text'])) . "', rating = '" . (int)$data['rating'] . "', status = '" . (int)$data['status'] . "', date_added = '" . $this->db->escape($data['date_added']) . "'");
+		$this->db->query("INSERT INTO " . DB_PREFIX . "review SET 
+		    author = '" . $this->db->escape($data['author']) . "', 
+		    product_id = '" . (int)$data['product_id'] . "', 
+		    text = '" . $this->db->escape(strip_tags($data['text'])) . "', 
+		    rating = '" . (int)$data['rating'] . "', 
+		    status = '" . (int)$data['status'] . "', 
+		    date_added = '" . $this->db->escape($data['date_added']) . "',
+            email = '" . $this->db->escape($data['email']) . "',
+		    benefits = '" . $this->db->escape($data['benefits']) . "',
+		    limitations = '" . $this->db->escape($data['limitations']) . "',
+		    ip = '" . $this->db->escape($data['ip']) . "',
+		    user_agent = '" . $this->db->escape($data['user_agent']) . "'
+        ");
 
 		$review_id = $this->db->getLastId();
 
@@ -11,7 +23,20 @@ class ModelCatalogReview extends Model {
 	}
 
 	public function editReview($review_id, $data) {
-		$this->db->query("UPDATE " . DB_PREFIX . "review SET author = '" . $this->db->escape($data['author']) . "', product_id = '" . (int)$data['product_id'] . "', text = '" . $this->db->escape(strip_tags($data['text'])) . "', rating = '" . (int)$data['rating'] . "', status = '" . (int)$data['status'] . "', date_added = '" . $this->db->escape($data['date_added']) . "', date_modified = NOW() WHERE review_id = '" . (int)$review_id . "'");
+		$this->db->query("UPDATE " . DB_PREFIX . "review SET 
+                author = '" . $this->db->escape($data['author']) . "', 
+                product_id = '" . (int)$data['product_id'] . "', 
+                text = '" . $this->db->escape(strip_tags($data['text'])) . "', 
+                rating = '" . (int)$data['rating'] . "', 
+                status = '" . (int)$data['status'] . "', 
+                date_added = '" . $this->db->escape($data['date_added']) . "', 
+                date_modified = NOW(),
+                email = '" . $this->db->escape($data['email']) . "',
+                benefits = '" . $this->db->escape($data['benefits']) . "',
+                limitations = '" . $this->db->escape($data['limitations']) . "',
+                ip = '" . $this->db->escape($data['ip']) . "',
+                user_agent = '" . $this->db->escape($data['user_agent']) . "', 
+            WHERE review_id = '" . (int)$review_id . "'");
 
 		$this->cache->delete('product');
 	}
@@ -29,7 +54,7 @@ class ModelCatalogReview extends Model {
 	}
 
 	public function getReviews($data = array()) {
-		$sql = "SELECT r.review_id, pd.name, r.author, r.rating, r.status, r.date_added FROM " . DB_PREFIX . "review r LEFT JOIN " . DB_PREFIX . "product_description pd ON (r.product_id = pd.product_id) WHERE pd.language_id = '" . (int)$this->config->get('config_language_id') . "'";
+		$sql = "SELECT r.review_id, pd.name, r.author, r.rating, r.status, r.date_added, r.email, r.benefits, r.limitations, r.ip, r.user_agent FROM " . DB_PREFIX . "review r LEFT JOIN " . DB_PREFIX . "product_description pd ON (r.product_id = pd.product_id) WHERE pd.language_id = '" . (int)$this->config->get('config_language_id') . "'";
 
 		if (!empty($data['filter_product'])) {
 			$sql .= " AND pd.name LIKE '" . $this->db->escape($data['filter_product']) . "%'";

@@ -403,6 +403,12 @@ class ControllerCatalogReview extends Controller {
 			$data['error_author'] = '';
 		}
 
+        if (isset($this->error['email'])) {
+            $data['error_email'] = $this->error['email'];
+        } else {
+            $data['error_email'] = '';
+        }
+
 		if (isset($this->error['text'])) {
 			$data['error_text'] = $this->error['text'];
 		} else {
@@ -505,6 +511,46 @@ class ControllerCatalogReview extends Controller {
 			$data['text'] = '';
 		}
 
+        if (isset($this->request->post['email'])) {
+            $data['email'] = $this->request->post['email'];
+        } elseif (!empty($review_info)) {
+            $data['email'] = $review_info['email'];
+        } else {
+            $data['email'] = '';
+        }
+
+        if (isset($this->request->post['benefits'])) {
+            $data['benefits'] = $this->request->post['benefits'];
+        } elseif (!empty($review_info)) {
+            $data['benefits'] = $review_info['benefits'];
+        } else {
+            $data['benefits'] = '';
+        }
+
+        if (isset($this->request->post['limitations'])) {
+            $data['limitations'] = $this->request->post['limitations'];
+        } elseif (!empty($review_info)) {
+            $data['limitations'] = $review_info['limitations'];
+        } else {
+            $data['limitations'] = '';
+        }
+
+        if (isset($this->request->post['ip'])) {
+            $data['ip'] = $this->request->post['ip'];
+        } elseif (!empty($review_info)) {
+            $data['ip'] = $review_info['ip'];
+        } else {
+            $data['ip'] = '';
+        }
+
+        if (isset($this->request->post['user_agent'])) {
+            $data['user_agent'] = $this->request->post['user_agent'];
+        } elseif (!empty($review_info)) {
+            $data['user_agent'] = $review_info['user_agent'];
+        } else {
+            $data['user_agent'] = '';
+        }
+
 		if (isset($this->request->post['rating'])) {
 			$data['rating'] = $this->request->post['rating'];
 		} elseif (!empty($review_info)) {
@@ -548,6 +594,10 @@ class ControllerCatalogReview extends Controller {
 		if ((utf8_strlen($this->request->post['author']) < 3) || (utf8_strlen($this->request->post['author']) > 64)) {
 			$this->error['author'] = $this->language->get('error_author');
 		}
+
+        if (!filter_var($this->request->post['email'], FILTER_VALIDATE_EMAIL)) {
+            $this->error['email'] = $this->language->get('error_email');
+        }
 
 		if (utf8_strlen($this->request->post['text']) < 1) {
 			$this->error['text'] = $this->language->get('error_text');

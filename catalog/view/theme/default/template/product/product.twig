@@ -69,40 +69,87 @@
                 <div id="review"></div>
                 <h2>{{ text_write }}</h2>
                 {% if review_guest %}
-                <div class="form-group required">
-                  <div class="col-sm-12">
-                    <label class="control-label" for="input-name">{{ entry_name }}</label>
-                    <input type="text" name="name" value="{{ customer_name }}" id="input-name" class="form-control" />
-                  </div>
+
+                <div class="d-flex flex-around rating-menu">
+                    <div class="rating-selector" data-value="1">
+                        <i class="fa fa-star"></i>
+                        <p>{{ entry_bad }}</p>
+                    </div>
+                    <div class="rating-selector" data-value="2">
+                        <i class="fa fa-star"></i>
+                        <p>{{ entry_so_so }}</p>
+                    </div>
+                    <div class="rating-selector" data-value="3">
+                        <i class="fa fa-star"></i>
+                        <p>{{ entry_normal }}</p>
+                    </div>
+                    <div class="rating-selector" data-value="4">
+                        <i class="fa fa-star"></i>
+                        <p>{{ entry_good }}</p>
+                    </div>
+                    <div class="rating-selector active" data-value="5">
+                        <i class="fa fa-star"></i>
+                        <p>{{ entry_great }}</p>
+                    </div>
                 </div>
+                <input type="hidden" name="rating" value="5" />
+
                 <div class="form-group required">
-                  <div class="col-sm-12">
-                    <label class="control-label" for="input-review">{{ entry_review }}</label>
-                    <textarea name="text" rows="5" id="input-review" class="form-control"></textarea>
-                    <div class="help-block">{{ text_note }}</div>
-                  </div>
+                    <div class="col-sm-12">
+                        <label class="control-label" for="input-name">{{ entry_name }}</label>
+                        <input type="text" name="name" value="{{ customer_name }}" id="input-name" class="form-control" required/>
+                    </div>
                 </div>
+
                 <div class="form-group required">
-                  <div class="col-sm-12">
-                    <label class="control-label">{{ entry_rating }}</label>
-                    &nbsp;&nbsp;&nbsp; {{ entry_bad }}&nbsp;
-                    <input type="radio" name="rating" value="1" />
-                    &nbsp;
-                    <input type="radio" name="rating" value="2" />
-                    &nbsp;
-                    <input type="radio" name="rating" value="3" />
-                    &nbsp;
-                    <input type="radio" name="rating" value="4" />
-                    &nbsp;
-                    <input type="radio" name="rating" value="5" />
-                    &nbsp;{{ entry_good }}</div>
+                    <div class="col-sm-12">
+                        <label class="control-label" for="input-name">{{ entry_email }}</label>
+                        <input type="email" name="email" value="{{ email }}" id="input-email" class="form-control" required/>
+                    </div>
                 </div>
+
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <label class="control-label" for="input-benefits">{{ entry_benefits }}</label>
+                        <textarea name="benefits" rows="3" id="input-benefits" class="form-control"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <label class="control-label" for="input-limitations">{{ entry_limitations }}</label>
+                        <textarea name="limitations" rows="3" id="input-limitations" class="form-control"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-group required">
+                    <div class="col-sm-12">
+                        <label class="control-label" for="input-review">{{ entry_review }}</label>
+                        <textarea name="text" rows="5" id="input-review" class="form-control" required></textarea>
+                        <div class="help-block">{{ text_note }}</div>
+                    </div>
+                </div>
+
                 {{ captcha }}
                 <div class="buttons clearfix">
                   <div class="pull-right">
                     <button type="button" id="button-review" data-loading-text="{{ text_loading }}" class="btn btn-primary">{{ button_continue }}</button>
                   </div>
                 </div>
+
+                <script>
+                    $(document).ready(() => {
+                        $('.rating-menu .rating-selector').on('click', function (e) {
+                            e.preventDefault();
+                            $('.rating-menu .rating-selector').removeClass('active');
+                            let value = $(this).data('value');
+                            $(this).addClass('active');
+                            $('input[name="rating"]').val(value);
+                        });
+
+
+                    });
+                </script>
                 {% else %}
                 {{ text_login }}
                 {% endif %}
@@ -529,9 +576,8 @@ $('#button-review').on('click', function() {
 			if (json['success']) {
 				$('#review').after('<div class="alert alert-success alert-dismissible"><i class="fa fa-check-circle"></i> ' + json['success'] + '</div>');
 
-				$('input[name=\'name\']').val('');
-				$('textarea[name=\'text\']').val('');
-				$('input[name=\'rating\']:checked').prop('checked', false);
+				$('#form-review input, #form-review textarea').val('');
+				$('#form-review .rating-selector').removeClass('active');
 			}
 		}
 	});

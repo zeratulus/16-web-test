@@ -559,10 +559,13 @@ class ControllerProductProduct extends Controller {
 
 		foreach ($results as $result) {
 			$data['reviews'][] = array(
-				'author'     => $result['author'],
-				'text'       => nl2br($result['text']),
-				'rating'     => (int)$result['rating'],
-				'date_added' => date($this->language->get('date_format_short'), strtotime($result['date_added']))
+				'author'      => $result['author'],
+				'email'       => $result['email'],
+				'text'        => nl2br($result['text']),
+				'benefits'    => nl2br($result['benefits']),
+				'limitations' => nl2br($result['limitations']),
+				'rating'      => (int)$result['rating'],
+				'date_added'  => date($this->language->get('date_format_short'), strtotime($result['date_added']))
 			);
 		}
 
@@ -590,6 +593,10 @@ class ControllerProductProduct extends Controller {
 					$json['error'] = $this->language->get('error_name');
 				}
 
+                if (!filter_var($this->request->post['email'], FILTER_VALIDATE_EMAIL)) {
+                    $json['error'] = $this->language->get('error_email');
+                }
+
 				if ((utf8_strlen($this->request->post['text']) < 25) || (utf8_strlen($this->request->post['text']) > 1000)) {
 					$json['error'] = $this->language->get('error_text');
 				}
@@ -609,6 +616,17 @@ class ControllerProductProduct extends Controller {
 
 				if (!isset($json['error'])) {
 					$this->load->model('catalog/review');
+
+                    if (!empty($this->request->server['HTTP_CLIENT_IP'])) {
+                        $ip = $this->request->server['HTTP_CLIENT_IP'];
+                    } elseif (!empty($this->request->server['HTTP_X_FORWARDED_FOR'])) {
+                        $ip = $this->request->server['HTTP_X_FORWARDED_FOR'];
+                    } else {
+                        $ip = $this->request->server['REMOTE_ADDR'];
+                    }
+
+                    $this->request->post['ip'] = $ip;
+                    $this->request->post['user_agent'] = $this->request->server['HTTP_USER_AGENT'];
 
 					$this->model_catalog_review->addReview($this->request->get['product_id'], $this->request->post);
 
