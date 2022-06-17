@@ -117,6 +117,61 @@ class ModelCatalogReview extends Model {
 		return $query->rows;
 	}
 
+    public function getAll($sort = 'r.date_added', $sortDirection = 'DESC')
+    {
+        $query = $this->db->query("SELECT r.review_id, r.author, r.rating, r.text, p.product_id, pd.name, p.price, p.image, 
+            r.date_added, r.email, r.benefits, r.limitations, r.ip FROM " . DB_PREFIX . "review r 
+                LEFT JOIN " . DB_PREFIX . "product p ON (r.product_id = p.product_id) 
+                LEFT JOIN " . DB_PREFIX . "product_description pd ON (p.product_id = pd.product_id) 
+            WHERE  
+                p.date_available <= NOW() AND 
+                p.status = '1' AND 
+                r.status = '1' AND 
+                pd.language_id = '" . (int)$this->config->get('config_language_id') . "' 
+                ORDER BY {$sort} {$sortDirection}");
+
+        return $query->rows;
+	}
+
+    public function getReviewsByIp($ip, $sort = 'r.date_added', $sortDirection = 'DESC')
+    {
+        $query = $this->db->query("SELECT r.review_id, r.author, r.rating, r.text, p.product_id, pd.name, p.price, p.image, 
+            r.date_added, r.email, r.benefits, r.limitations, r.ip FROM " . DB_PREFIX . "review r 
+                LEFT JOIN " . DB_PREFIX . "product p ON (r.product_id = p.product_id) 
+                LEFT JOIN " . DB_PREFIX . "product_description pd ON (p.product_id = pd.product_id) 
+            WHERE r.ip = '{$ip}' 
+                p.date_available <= NOW() AND 
+                p.status = '1' AND 
+                r.status = '1' AND 
+                pd.language_id = '" . (int)$this->config->get('config_language_id') . "' 
+                ORDER BY {$sort} {$sortDirection}");
+
+        return $query->rows;
+    }
+
+    public function getReviewsById($id, $sort = 'r.date_added', $sortDirection = 'DESC')
+    {
+        $query = $this->db->query("SELECT r.review_id, r.author, r.rating, r.text, p.product_id, pd.name, p.price, p.image, 
+            r.date_added, r.email, r.benefits, r.limitations, r.ip FROM " . DB_PREFIX . "review r 
+                LEFT JOIN " . DB_PREFIX . "product p ON (r.product_id = p.product_id) 
+                LEFT JOIN " . DB_PREFIX . "product_description pd ON (p.product_id = pd.product_id) 
+            WHERE r.review_id = '{$id}' 
+                p.date_available <= NOW() AND 
+                p.status = '1' AND 
+                r.status = '1' AND 
+                pd.language_id = '" . (int)$this->config->get('config_language_id') . "' 
+                ORDER BY {$sort} {$sortDirection}");
+
+        return $query->rows;
+    }
+
+    public function getAuthors()
+    {
+        $query = $this->db->query("SELECT DISTINCT r.author FROM " . DB_PREFIX . "review r");
+
+        return $query->rows;
+    }
+
     public function getReviewVideos($review_id)
     {
         $sql = "SELECT * FROM ".DB_PREFIX."review_youtube WHERE review_id = " . (int)$review_id;
