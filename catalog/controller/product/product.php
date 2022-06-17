@@ -5,6 +5,9 @@ class ControllerProductProduct extends Controller {
 	public function index() {
 		$this->load->language('product/product');
 
+        $this->document->addStyle('catalog/view/javascript/file-upload-with-preview/file-upload-with-preview.min.css');
+        $this->document->addScript('catalog/view/javascript/file-upload-with-preview/file-upload-with-preview.iife.js');
+
 		$data['breadcrumbs'] = array();
 
 		$data['breadcrumbs'][] = array(
@@ -541,45 +544,69 @@ class ControllerProductProduct extends Controller {
 	}
 
 	public function review() {
-		$this->load->language('product/product');
+        if (isset($this->request->get['product_id'])) {
+            $product_id = (int)$this->request->get['product_id'];
 
-		$this->load->model('catalog/review');
+            $this->load->language('product/product');
 
-		if (isset($this->request->get['page'])) {
-			$page = (int)$this->request->get['page'];
-		} else {
-			$page = 1;
-		}
+            $this->load->model('catalog/review');
 
-		$data['reviews'] = array();
+            if (isset($this->request->get['page'])) {
+                $page = (int)$this->request->get['page'];
+            } else {
+                $page = 1;
+            }
 
-		$review_total = $this->model_catalog_review->getTotalReviewsByProductId($this->request->get['product_id']);
+            if (isset($this->request->get['review_sort'])) {
+                $sort = (int)$this->request->get['review_sort'];
+            } else {
+                $sort = '';
+            }
+            $data['selectedSort'] = $sort;
 
-		$results = $this->model_catalog_review->getReviewsByProductId($this->request->get['product_id'], ($page - 1) * 5, 5);
+            if (isset($this->request->get['sortDirection'])) {
+                $sortDirection = (int)$this->request->get['sortDirection'];
+            } else {
+                $sortDirection = '';
+            }
 
-		foreach ($results as $result) {
-			$data['reviews'][] = array(
-				'author'      => $result['author'],
-				'email'       => $result['email'],
-				'text'        => nl2br($result['text']),
-				'benefits'    => nl2br($result['benefits']),
-				'limitations' => nl2br($result['limitations']),
-				'rating'      => (int)$result['rating'],
-				'date_added'  => date($this->language->get('date_format_short'), strtotime($result['date_added']))
-			);
-		}
+            $data['product_id'] = $product_id;
+            $data['reviews'] = array();
 
-		$pagination = new Pagination();
-		$pagination->total = $review_total;
-		$pagination->page = $page;
-		$pagination->limit = 5;
-		$pagination->url = $this->url->link('product/product/review', 'product_id=' . $this->request->get['product_id'] . '&page={page}');
+            $review_total = $this->model_catalog_review->getTotalReviewsByProductId($product_id);
 
-		$data['pagination'] = $pagination->render();
+            $data['sorts'] = [
+                '' => $this->language->get('text_select'),
+                'date_added' => $this->language->get('filter_date_added'),
+                'rating' => $this->language->get('filter_rating')
+            ];
 
-		$data['results'] = sprintf($this->language->get('text_pagination'), ($review_total) ? (($page - 1) * 5) + 1 : 0, ((($page - 1) * 5) > ($review_total - 5)) ? $review_total : ((($page - 1) * 5) + 5), $review_total, ceil($review_total / 5));
+            $results = $this->model_catalog_review->getReviewsByProductId($product_id, ($page - 1) * 5, 5, $sort, $sortDirection);
 
-		$this->response->setOutput($this->load->view('product/review', $data));
+            foreach ($results as $result) {
+                $data['reviews'][] = array(
+                    'author'      => $result['author'],
+                    'email'       => $result['email'],
+                    'text'        => nl2br($result['text']),
+                    'benefits'    => nl2br($result['benefits']),
+                    'limitations' => nl2br($result['limitations']),
+                    'rating'      => (int)$result['rating'],
+                    'date_added'  => date($this->language->get('date_format_short'), strtotime($result['date_added']))
+                );
+            }
+
+            $pagination = new Pagination();
+            $pagination->total = $review_total;
+            $pagination->page = $page;
+            $pagination->limit = 5;
+            $pagination->url = $this->url->link('product/product/review', "product_id={$product_id}&review_sort={$sort}&sortDirection={$sortDirection}&page={page}");
+
+            $data['pagination'] = $pagination->render();
+
+            $data['results'] = sprintf($this->language->get('text_pagination'), ($review_total) ? (($page - 1) * 5) + 1 : 0, ((($page - 1) * 5) > ($review_total - 5)) ? $review_total : ((($page - 1) * 5) + 5), $review_total, ceil($review_total / 5));
+
+            $this->response->setOutput($this->load->view('product/review', $data));
+        }
 	}
 
 	public function write() {

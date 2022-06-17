@@ -34,6 +34,7 @@ $_['text_year']                = 'year';
 // Entry
 $_['entry_qty']                = 'Qty';
 $_['entry_email']              = 'Email';
+$_['entry_video_id']           = 'YouTube Video ID';
 $_['entry_limitations']        = 'Limitations';
 $_['entry_benefits']           = 'Benefits';
 $_['entry_name']               = 'Your Name';
@@ -44,12 +45,15 @@ $_['entry_good']               = 'Good';
 $_['entry_normal']             = 'Normal';
 $_['entry_so_so']              = 'So so';
 $_['entry_bad']                = 'Bad';
-
+$_['entry_sort']               = 'Sort By';
 
 // Tabs
 $_['tab_description']          = 'Description';
 $_['tab_attribute']            = 'Specification';
 $_['tab_review']               = 'Reviews (%s)';
+
+$_['filter_date_added']        = 'Date Added';
+$_['filter_rating']            = 'Rating';
 
 // Error
 $_['error_name']               = 'Warning: Review Name must be between 3 and 25 characters!';

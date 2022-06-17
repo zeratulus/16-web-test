@@ -130,9 +130,19 @@
                     </div>
                 </div>
 
-                {{ captcha }}
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <label class="control-label" for="input-video-id">{{ entry_video_id }}</label>
+                        <input type="text" name="video_id" value="{{ video_id }}" id="input-video-id" class="form-control" required/>
+                    </div>
+                </div>
+
+                <div class="custom-file-container" data-upload-id="review-images"></div>
+
+                <div class="d-flex justify-center">{{ captcha }}</div>
+
                 <div class="buttons clearfix">
-                  <div class="pull-right">
+                  <div class="d-flex justify-center">
                     <button type="button" id="button-review" data-loading-text="{{ text_loading }}" class="btn btn-primary">{{ button_continue }}</button>
                   </div>
                 </div>
@@ -147,7 +157,9 @@
                             $('input[name="rating"]').val(value);
                         });
 
-
+                        window.upload = new FileUploadWithPreview.FileUploadWithPreview('review-images', {
+                            multiple: true,
+                        });
                     });
                 </script>
                 {% else %}
@@ -554,6 +566,8 @@ $('#review').delegate('.pagination a', 'click', function(e) {
 
 $('#review').load('index.php?route=product/product/review&product_id={{ product_id }}');
 
+$('#review').load('index.php?route=product/product/review&product_id={{ product_id }}');
+
 $('#button-review').on('click', function() {
 	$.ajax({
 		url: 'index.php?route=product/product/write&product_id={{ product_id }}',
@@ -578,6 +592,8 @@ $('#button-review').on('click', function() {
 
 				$('#form-review input, #form-review textarea').val('');
 				$('#form-review .rating-selector').removeClass('active');
+
+                window.upload.resetPreviewPanel();
 			}
 		}
 	});

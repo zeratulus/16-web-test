@@ -35,7 +35,7 @@ class ModelCatalogReview extends Model {
                 benefits = '" . $this->db->escape($data['benefits']) . "',
                 limitations = '" . $this->db->escape($data['limitations']) . "',
                 ip = '" . $this->db->escape($data['ip']) . "',
-                user_agent = '" . $this->db->escape($data['user_agent']) . "', 
+                user_agent = '" . $this->db->escape($data['user_agent']) . "'
             WHERE review_id = '" . (int)$review_id . "'");
 
 		$this->cache->delete('product');
@@ -43,6 +43,8 @@ class ModelCatalogReview extends Model {
 
 	public function deleteReview($review_id) {
 		$this->db->query("DELETE FROM " . DB_PREFIX . "review WHERE review_id = '" . (int)$review_id . "'");
+		$this->db->query("DELETE FROM " . DB_PREFIX . "review_image WHERE review_id = '" . (int)$review_id . "'");
+		$this->db->query("DELETE FROM " . DB_PREFIX . "review_youtube WHERE review_id = '" . (int)$review_id . "'");
 
 		$this->cache->delete('product');
 	}

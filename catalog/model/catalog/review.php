@@ -17,6 +17,18 @@ class ModelCatalogReview extends Model {
 
 		$review_id = $this->db->getLastId();
 
+		//Add images
+        if (isset($data['images']) && !empty($data['images'])) {
+            foreach ($data['images'] as $image) {
+                $this->db->query("INSERT INTO " . DB_PREFIX . "review_image (review_id, image) VALUES ('{$review_id}', '{$this->db->escape($image)}');");
+            }
+        }
+
+		//Add Youtube video
+		if (isset($data['video_id']) && !empty($data['video_id'])) {
+            $this->db->query("INSERT INTO " . DB_PREFIX . "review_youtube (review_id, video_id) VALUES ('{$review_id}', '{$this->db->escape($data['video_id'])}');");
+        }
+
 		if (in_array('review', (array)$this->config->get('config_mail_alert'))) {
 			$this->load->language('mail/review');
 			$this->load->model('catalog/product');
@@ -59,7 +71,22 @@ class ModelCatalogReview extends Model {
 		}
 	}
 
-	public function getReviewsByProductId($product_id, $start = 0, $limit = 20) {
+	public function getReviewsByProductId($product_id, $start = 0, $limit = 20, $sort = 'r.date_added', $sortDirection = 'DESC') {
+
+	    $allowedSorts = [
+	        'r.date_added',
+            'r.rating',
+            'r.ip'
+        ];
+
+	    if (!in_array($sort, $allowedSorts)) {
+	        $sort = 'r.date_added';
+        }
+
+	    if (strtoupper($sortDirection) != 'DESC' || strtoupper($sortDirection) != 'ASC') {
+            $sortDirection = 'DESC';
+        }
+
 		if ($start < 0) {
 			$start = 0;
 		}
@@ -68,7 +95,16 @@ class ModelCatalogReview extends Model {
 			$limit = 20;
 		}
 
-		$query = $this->db->query("SELECT r.review_id, r.author, r.rating, r.text, p.product_id, pd.name, p.price, p.image, r.date_added, r.email, r.benefits, r.limitations FROM " . DB_PREFIX . "review r LEFT JOIN " . DB_PREFIX . "product p ON (r.product_id = p.product_id) LEFT JOIN " . DB_PREFIX . "product_description pd ON (p.product_id = pd.product_id) WHERE p.product_id = '" . (int)$product_id . "' AND p.date_available <= NOW() AND p.status = '1' AND r.status = '1' AND pd.language_id = '" . (int)$this->config->get('config_language_id') . "' ORDER BY r.date_added DESC LIMIT " . (int)$start . "," . (int)$limit);
+		$query = $this->db->query("SELECT r.review_id, r.author, r.rating, r.text, p.product_id, pd.name, p.price, p.image, 
+            r.date_added, r.email, r.benefits, r.limitations, r.ip FROM " . DB_PREFIX . "review r 
+                LEFT JOIN " . DB_PREFIX . "product p ON (r.product_id = p.product_id) 
+                LEFT JOIN " . DB_PREFIX . "product_description pd ON (p.product_id = pd.product_id) 
+            WHERE p.product_id = '" . (int)$product_id . "' AND 
+                p.date_available <= NOW() AND 
+                p.status = '1' AND 
+                r.status = '1' AND 
+                pd.language_id = '" . (int)$this->config->get('config_language_id') . "' 
+                ORDER BY {$sort} {$sortDirection} LIMIT " . (int)$start . "," . (int)$limit);
 
 		return $query->rows;
 	}
