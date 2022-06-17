@@ -69,6 +69,14 @@ class ModelCatalogReview extends Model {
 				}
 			}
 		}
+
+		return $review_id;
+	}
+
+    public function addImage($review_id, $file)
+    {
+        $this->db->query("INSERT INTO " . DB_PREFIX . "review_image (review_id, image) VALUES ('{$review_id}', '{$this->db->escape($file)}');");
+        return $this->db->getLastId();
 	}
 
 	public function getReviewsByProductId($product_id, $start = 0, $limit = 20, $sort = 'r.date_added', $sortDirection = 'DESC') {
@@ -108,6 +116,20 @@ class ModelCatalogReview extends Model {
 
 		return $query->rows;
 	}
+
+    public function getReviewVideos($review_id)
+    {
+        $sql = "SELECT * FROM ".DB_PREFIX."review_youtube WHERE review_id = " . (int)$review_id;
+        $results = $this->db->query($sql);
+        return $results->rows;
+	}
+
+    public function getReviewImages($review_id)
+    {
+        $sql = "SELECT * FROM ".DB_PREFIX."review_image WHERE review_id = " . (int)$review_id;
+        $results = $this->db->query($sql);
+        return $results->rows;
+    }
 
 	public function getTotalReviewsByProductId($product_id) {
 		$query = $this->db->query("SELECT COUNT(*) AS total FROM " . DB_PREFIX . "review r LEFT JOIN " . DB_PREFIX . "product p ON (r.product_id = p.product_id) LEFT JOIN " . DB_PREFIX . "product_description pd ON (p.product_id = pd.product_id) WHERE p.product_id = '" . (int)$product_id . "' AND p.date_available <= NOW() AND p.status = '1' AND r.status = '1' AND pd.language_id = '" . (int)$this->config->get('config_language_id') . "'");

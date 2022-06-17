@@ -7,6 +7,8 @@ class ControllerProductProduct extends Controller {
 
         $this->document->addStyle('catalog/view/javascript/file-upload-with-preview/file-upload-with-preview.min.css');
         $this->document->addScript('catalog/view/javascript/file-upload-with-preview/file-upload-with-preview.iife.js');
+        $this->document->addStyle('catalog/view/javascript/llyv/llyv.min.css');
+        $this->document->addScript('catalog/view/javascript/llyv/llyv.min.js');
 
 		$data['breadcrumbs'] = array();
 
@@ -558,16 +560,16 @@ class ControllerProductProduct extends Controller {
             }
 
             if (isset($this->request->get['review_sort'])) {
-                $sort = (int)$this->request->get['review_sort'];
+                $sort = $this->request->get['review_sort'];
             } else {
-                $sort = '';
+                $sort = 'r.date_added';
             }
             $data['selectedSort'] = $sort;
 
             if (isset($this->request->get['sortDirection'])) {
-                $sortDirection = (int)$this->request->get['sortDirection'];
+                $sortDirection = $this->request->get['sortDirection'];
             } else {
-                $sortDirection = '';
+                $sortDirection = 'DESC';
             }
 
             $data['product_id'] = $product_id;
@@ -581,9 +583,12 @@ class ControllerProductProduct extends Controller {
                 'rating' => $this->language->get('filter_rating')
             ];
 
-            $results = $this->model_catalog_review->getReviewsByProductId($product_id, ($page - 1) * 5, 5, $sort, $sortDirection);
+            $results = $this->model_catalog_review->getReviewsByProductId($product_id, ($page - 1) * 25, 25, $sort, $sortDirection);
 
             foreach ($results as $result) {
+                $video = $this->model_catalog_review->getReviewVideos($result['review_id']);
+                $images = $this->model_catalog_review->getReviewImages($result['review_id']);
+
                 $data['reviews'][] = array(
                     'author'      => $result['author'],
                     'email'       => $result['email'],
@@ -591,6 +596,8 @@ class ControllerProductProduct extends Controller {
                     'benefits'    => nl2br($result['benefits']),
                     'limitations' => nl2br($result['limitations']),
                     'rating'      => (int)$result['rating'],
+                    'images'      => $images,
+                    'video'       => $video,
                     'date_added'  => date($this->language->get('date_format_short'), strtotime($result['date_added']))
                 );
             }
@@ -598,12 +605,12 @@ class ControllerProductProduct extends Controller {
             $pagination = new Pagination();
             $pagination->total = $review_total;
             $pagination->page = $page;
-            $pagination->limit = 5;
+            $pagination->limit = 25;
             $pagination->url = $this->url->link('product/product/review', "product_id={$product_id}&review_sort={$sort}&sortDirection={$sortDirection}&page={page}");
 
             $data['pagination'] = $pagination->render();
 
-            $data['results'] = sprintf($this->language->get('text_pagination'), ($review_total) ? (($page - 1) * 5) + 1 : 0, ((($page - 1) * 5) > ($review_total - 5)) ? $review_total : ((($page - 1) * 5) + 5), $review_total, ceil($review_total / 5));
+            $data['results'] = sprintf($this->language->get('text_pagination'), ($review_total) ? (($page - 1) * 25) + 1 : 0, ((($page - 1) * 25) > ($review_total - 25)) ? $review_total : ((($page - 1) * 25) + 25), $review_total, ceil($review_total / 25));
 
             $this->response->setOutput($this->load->view('product/review', $data));
         }
@@ -655,7 +662,8 @@ class ControllerProductProduct extends Controller {
                     $this->request->post['ip'] = $ip;
                     $this->request->post['user_agent'] = $this->request->server['HTTP_USER_AGENT'];
 
-					$this->model_catalog_review->addReview($this->request->get['product_id'], $this->request->post);
+					$review_id = $this->model_catalog_review->addReview($this->request->get['product_id'], $this->request->post);
+                    $json['file_results'] = $this->upload($review_id);
 
 					$json['success'] = $this->language->get('text_success');
 				}
@@ -667,6 +675,48 @@ class ControllerProductProduct extends Controller {
 		$this->response->addHeader('Content-Type: application/json');
 		$this->response->setOutput(json_encode($json));
 	}
+
+    private function upload($review_id) {
+        $path = DIR_IMAGE . 'review/' . $review_id . '/';
+        $this->load->language('tool/upload');
+
+        $result = array();
+
+        foreach ($this->request->files as $currentFile) {
+            if (!empty($currentFile['name']) && is_file($currentFile['tmp_name'])) {
+                // Sanitize the filename
+                $filename = basename(preg_replace('/[^a-zA-Z0-9\.\-\s+]/', '', html_entity_decode($currentFile['name'], ENT_QUOTES, 'UTF-8')));
+
+                // Return any upload error
+                if ($currentFile['error'] != UPLOAD_ERR_OK) {
+                    $result['error'] = $this->language->get('error_upload_' . $currentFile['error']);
+                }
+            } else {
+                $result['error'] = $this->language->get('error_upload');
+            }
+
+            if (!$result) {
+                if (!is_dir($path))
+                    mkdir($path);
+
+                $file = $filename . '.' . token(6);
+
+                // Hide the uploaded file name so people can not link to it directly.
+                $this->load->model('tool/upload');
+                if ($res = move_uploaded_file($currentFile['tmp_name'], $path . $file)) {
+                    $result['success'] = $this->language->get('text_upload');
+                }
+
+                $this->load->model('catalog/review');
+                $this->model_catalog_review->addImage($review_id, '/review/' . $file);
+
+                $result['code'] = $res;
+            }
+        }
+
+
+        return $result;
+    }
 
 	public function getRecurringDescription() {
 		$this->load->language('product/product');

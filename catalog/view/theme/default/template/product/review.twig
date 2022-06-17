@@ -39,6 +39,19 @@
         <p><i class="fa fa-minus-circle"></i> {{ entry_limitations }}</p>
         <p>{{ review.limitations }}</p>
       {% endif %}
+
+      <div class="review-images">
+        {% for video in review.video %}
+          <div class="item">
+            <div class="youtube-video llyv" data-id="{{ video.video_id }}"></div>
+          </div>
+        {% endfor %}
+        {% for image in review.images %}
+          <div class="item">
+            <img class="image" src="image{{ image.image }}" />
+          </div>
+        {% endfor %}
+      </div>
     </div>
   {% endfor %}
   <div class="row">
@@ -54,3 +67,5 @@
     $('#review').load('index.php?route=product/product/review&product_id={{ product_id }}&sort=' + $(this).val());
   });
 </script>
+<link rel="stylesheet" href="catalog/view/javascript/llyv/llyv.min.css">
+<script src="catalog/view/javascript/llyv/llyv.min.js"></script>
