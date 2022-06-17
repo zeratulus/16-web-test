@@ -48,7 +48,7 @@
         {% endfor %}
         {% for image in review.images %}
           <div class="item">
-            <img class="image" src="image{{ image.image }}" />
+            <img class="image" src="image/{{ image.image }}" />
           </div>
         {% endfor %}
       </div>
@@ -64,7 +64,7 @@
 <script>
   $('#select-sort').on('change', function () {
     $('#review').html('');
-    $('#review').load('index.php?route=product/product/review&product_id={{ product_id }}&sort=' + $(this).val());
+    $('#review').load('index.php?route=product/product/review&product_id={{ product_id }}&review_sort=' + $(this).val());
   });
 </script>
 <link rel="stylesheet" href="catalog/view/javascript/llyv/llyv.min.css">

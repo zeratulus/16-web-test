@@ -849,7 +849,10 @@ html[dir=rtl] #cart .dropdown-menu {
 	transform: scale(1.2);
 	text-shadow: 0 0 4px rgba(0,0,0,0.4);
 }
-
+.review {
+	border-bottom: 1px solid #c9c9c9;
+	margin-bottom: 10px;
+}
 .review .review-images {
 	display: flex;
 	justify-content: flex-start;

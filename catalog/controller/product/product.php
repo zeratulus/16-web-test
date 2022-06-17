@@ -581,8 +581,8 @@ class ControllerProductProduct extends Controller {
 
             $data['sorts'] = [
                 '' => $this->language->get('text_select'),
-                'date_added' => $this->language->get('filter_date_added'),
-                'rating' => $this->language->get('filter_rating')
+                'r.date_added' => $this->language->get('filter_date_added'),
+                'r.rating' => $this->language->get('filter_rating')
             ];
 
             $results = $this->model_catalog_review->getReviewsByProductId($product_id, ($page - 1) * $limit, $limit, $sort, $sortDirection);
