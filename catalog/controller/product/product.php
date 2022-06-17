@@ -553,6 +553,8 @@ class ControllerProductProduct extends Controller {
 
             $this->load->model('catalog/review');
 
+            $limit = 25;
+
             if (isset($this->request->get['page'])) {
                 $page = (int)$this->request->get['page'];
             } else {
@@ -583,7 +585,7 @@ class ControllerProductProduct extends Controller {
                 'rating' => $this->language->get('filter_rating')
             ];
 
-            $results = $this->model_catalog_review->getReviewsByProductId($product_id, ($page - 1) * 25, 25, $sort, $sortDirection);
+            $results = $this->model_catalog_review->getReviewsByProductId($product_id, ($page - 1) * $limit, $limit, $sort, $sortDirection);
 
             foreach ($results as $result) {
                 $video = $this->model_catalog_review->getReviewVideos($result['review_id']);
@@ -605,12 +607,12 @@ class ControllerProductProduct extends Controller {
             $pagination = new Pagination();
             $pagination->total = $review_total;
             $pagination->page = $page;
-            $pagination->limit = 25;
+            $pagination->limit = $limit;
             $pagination->url = $this->url->link('product/product/review', "product_id={$product_id}&review_sort={$sort}&sortDirection={$sortDirection}&page={page}");
 
             $data['pagination'] = $pagination->render();
 
-            $data['results'] = sprintf($this->language->get('text_pagination'), ($review_total) ? (($page - 1) * 25) + 1 : 0, ((($page - 1) * 25) > ($review_total - 25)) ? $review_total : ((($page - 1) * 25) + 25), $review_total, ceil($review_total / 25));
+            $data['results'] = sprintf($this->language->get('text_pagination'), ($review_total) ? (($page - 1) * $limit) + 1 : 0, ((($page - 1) * $limit) > ($review_total - $limit)) ? $review_total : ((($page - 1) * $limit) + $limit), $review_total, ceil($review_total / $limit));
 
             $this->response->setOutput($this->load->view('product/review', $data));
         }
@@ -677,7 +679,8 @@ class ControllerProductProduct extends Controller {
 	}
 
     private function upload($review_id) {
-        $path = DIR_IMAGE . 'review/' . $review_id . '/';
+	    $mainPart = 'review/' . $review_id . '/';
+        $path = DIR_IMAGE . $mainPart;
         $this->load->language('tool/upload');
 
         $result = array();
@@ -686,6 +689,13 @@ class ControllerProductProduct extends Controller {
             if (!empty($currentFile['name']) && is_file($currentFile['tmp_name'])) {
                 // Sanitize the filename
                 $filename = basename(preg_replace('/[^a-zA-Z0-9\.\-\s+]/', '', html_entity_decode($currentFile['name'], ENT_QUOTES, 'UTF-8')));
+
+                $allowedExtensions = ['jpg', 'png', 'txt'];
+
+                $dotPos = utf8_strpos($filename, '.');
+
+                $allowed = in_array($ext = utf8_substr($filename, $dotPos + 1, 3), $allowedExtensions);
+                if (!$allowed) $result['error'] = 'Error: Not allowed extension.';
 
                 // Return any upload error
                 if ($currentFile['error'] != UPLOAD_ERR_OK) {
@@ -699,8 +709,8 @@ class ControllerProductProduct extends Controller {
                 if (!is_dir($path))
                     mkdir($path);
 
-                $file = $filename . '.' . token(6);
-
+                $file = utf8_substr($filename, 0, $dotPos) . '.' . $ext;
+                $new_filename = $mainPart . $file;
                 // Hide the uploaded file name so people can not link to it directly.
                 $this->load->model('tool/upload');
                 if ($res = move_uploaded_file($currentFile['tmp_name'], $path . $file)) {
@@ -708,7 +718,16 @@ class ControllerProductProduct extends Controller {
                 }
 
                 $this->load->model('catalog/review');
-                $this->model_catalog_review->addImage($review_id, '/review/' . $file);
+                $this->model_catalog_review->addImage($review_id, $new_filename);
+
+                list($width_orig, $height_orig) = getimagesize(DIR_IMAGE . $new_filename);
+
+                $width = $height = 1000;
+                if ($width_orig != $width || $height_orig != $height) {
+                    $image = new Image(DIR_IMAGE . $new_filename);
+                    $image->resize($width, $height);
+                    $image->save(DIR_IMAGE . $new_filename);
+                }
 
                 $result['code'] = $res;
             }
