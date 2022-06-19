@@ -4,15 +4,20 @@
     <div class="form-group">
       <label for="select-sort">{{ entry_sort }}</label>
       <select name="review_sort" id="select-sort" class="form-control">
-        {% for sort, text in sorts %}
-          {% if selectedSort == sort %}
-            <option value="{{ sort }}" selected>{{ text }}</option>
+        {% for sortVal, text in sorts %}
+          {% if selectedSort == sortVal %}
+            <option value="{{ sortVal }}" selected>{{ text }}</option>
           {% else %}
-            <option value="{{ sort }}">{{ text }}</option>
+            <option value="{{ sortVal }}">{{ text }}</option>
           {% endif %}
         {% endfor %}
       </select>
     </div>
+    {% if sortDirection == 'DESC' %}
+      <a id="sort-direction" data-sort-direction="DESC" data-switch="ASC">Sort Direction<i class="fa fa-sort-alpha-desc"></i></a>
+    {% else %}
+      <a id="sort-direction" data-sort-direction="ASC" data-switch="DESC">Sort Direction<i class="fa fa-sort-alpha-asc"></i></a>
+    {% endif %}
   </div>
   {% for review in reviews %}
     <div class="review">
@@ -62,9 +67,22 @@
   <p>{{ text_no_reviews }}</p>
 {% endif %}
 <script>
-  $('#select-sort').on('change', function () {
+  let sort = '{{ selectedSort }}';
+  let sortDir = $('#sort-direction').data('sort-direction');
+
+  function reloadReviews() {
     $('#review').html('');
-    $('#review').load('index.php?route=product/product/review&product_id={{ product_id }}&review_sort=' + $(this).val());
+    console.log(sort, sortDir);
+    $('#review').load('index.php?route=product/product/review&product_id={{ product_id }}&review_sort=' + sort + '&sortDirection=' + sortDir);
+  }
+
+  $('#select-sort').on('change', function () {
+    sort = $(this).val();
+    reloadReviews();
+  });
+  $('#sort-direction').on('click', function () {
+    sortDir = $('#sort-direction').data('switch');
+    reloadReviews();
   });
 </script>
 <link rel="stylesheet" href="catalog/view/javascript/llyv/llyv.min.css">

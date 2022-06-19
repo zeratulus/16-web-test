@@ -91,10 +91,6 @@ class ModelCatalogReview extends Model {
 	        $sort = 'r.date_added';
         }
 
-	    if (strtoupper($sortDirection) != 'DESC' || strtoupper($sortDirection) != 'ASC') {
-            $sortDirection = 'DESC';
-        }
-
 		if ($start < 0) {
 			$start = 0;
 		}

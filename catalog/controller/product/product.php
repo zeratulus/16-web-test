@@ -573,7 +573,7 @@ class ControllerProductProduct extends Controller {
             } else {
                 $sortDirection = 'DESC';
             }
-
+            $data['sortDirection'] = $sortDirection;
             $data['product_id'] = $product_id;
             $data['reviews'] = array();
 

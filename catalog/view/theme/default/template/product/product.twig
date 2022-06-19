@@ -96,44 +96,38 @@
 
                 <div class="form-group required">
                     <div class="col-sm-12">
-                        <label class="control-label" for="input-name">{{ entry_name }}</label>
-                        <input type="text" name="name" value="{{ customer_name }}" id="input-name" class="form-control" required/>
+                        <input type="text" name="name" value="{{ customer_name }}" placeholder="{{ entry_name }}" id="input-name" class="form-control" required/>
                     </div>
                 </div>
 
                 <div class="form-group required">
                     <div class="col-sm-12">
-                        <label class="control-label" for="input-name">{{ entry_email }}</label>
-                        <input type="email" name="email" value="{{ email }}" id="input-email" class="form-control" required/>
+                        <input type="email" name="email" value="{{ email }}" placeholder="{{ entry_email }}" id="input-email" class="form-control" required/>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <div class="col-sm-12">
-                        <label class="control-label" for="input-benefits">{{ entry_benefits }}</label>
-                        <textarea name="benefits" rows="3" id="input-benefits" class="form-control"></textarea>
+                        <textarea name="benefits" rows="3" id="input-benefits" placeholder="{{ entry_benefits }}" class="form-control"></textarea>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <div class="col-sm-12">
-                        <label class="control-label" for="input-limitations">{{ entry_limitations }}</label>
-                        <textarea name="limitations" rows="3" id="input-limitations" class="form-control"></textarea>
+                        <textarea name="limitations" rows="3" id="input-limitations" placeholder="{{ entry_limitations }}" class="form-control"></textarea>
                     </div>
                 </div>
 
                 <div class="form-group required">
                     <div class="col-sm-12">
-                        <label class="control-label" for="input-review">{{ entry_review }}</label>
-                        <textarea name="text" rows="5" id="input-review" class="form-control" required></textarea>
+                        <textarea name="text" rows="5" id="input-review" class="form-control" placeholder="{{ entry_review }}" required></textarea>
                         <div class="help-block">{{ text_note }}</div>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <div class="col-sm-12">
-                        <label class="control-label" for="input-video-id">{{ entry_video_id }}</label>
-                        <input type="text" name="video_id" value="{{ video_id }}" id="input-video-id" class="form-control" required/>
+                        <input type="text" name="video_id" value="{{ video_id }}" placeholder="{{ entry_video_id }}" id="input-video-id" class="form-control" required/>
                     </div>
                 </div>
 
